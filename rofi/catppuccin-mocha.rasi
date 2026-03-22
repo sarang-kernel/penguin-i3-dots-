@@ -1,0 +1,113 @@
+/* Spotlight-style Rofi theme (Catppuccin Mocha-ish) */
+
+* {
+    bg-col:           #1e1e2e;
+    bg-col-light:     #181825;
+    border-col:       #313244;
+    selected-col:     #313244;
+
+    blue:             #89b4fa;
+    fg-col:           #cdd6f4;
+    fg-muted:         #a6adc8;
+    fg-accent:        #f38ba8;
+
+    width:            780px;
+    font:             "JetBrainsMono Nerd Font 18";
+}
+
+configuration {
+    show-icons: true;
+    /* Pick what you have installed; Papirus is great on Arch */
+    icon-theme: "Papirus";
+    /* You can set a consistent prompt label if you want */
+    display-drun: "Spotlight";
+}
+
+window {
+    width: @width;
+    border: 2px;
+    border-radius: 16px;
+    border-color: @border-col;
+    background-color: @bg-col;
+}
+
+mainbox {
+    padding: 14px;
+    background-color: @bg-col;
+}
+
+inputbar {
+    background-color: @bg-col-light;
+    border-radius: 14px;
+    padding: 12px 14px;
+    spacing: 10px;
+    children: [ prompt, entry ];
+}
+
+prompt {
+    background-color: @blue;
+    text-color: @bg-col;
+    border-radius: 12px;
+    padding: 8px 12px;
+}
+
+textbox-prompt-colon {
+    str: "";
+    expand: false;
+}
+
+entry {
+    background-color: transparent;
+    text-color: @fg-col;
+    placeholder: "Search apps, files, math, web…";
+    placeholder-color: @fg-muted;
+}
+
+listview {
+    columns: 1;
+    lines: 10;
+    fixed-height: 1;
+    dynamic: true;
+    scrollbar: true;
+
+    background-color: transparent;
+    spacing: 8px;
+    padding: 12px 4px 4px 4px;
+}
+
+element {
+    background-color: transparent;
+    text-color: @fg-col;
+    border-radius: 14px;
+    padding: 10px 12px;
+}
+
+element selected {
+    background-color: @selected-col;
+    text-color: @fg-accent;
+}
+
+element-icon {
+    size: 1.4em;
+    margin: 0px 12px 0px 0px;
+    background-color: transparent;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    vertical-align: 0.5;
+}
+
+message {
+    background-color: @bg-col-light;
+    border-radius: 12px;
+    margin: 8px 0px 0px 0px;
+    padding: 10px 12px;
+}
+
+textbox {
+    background-color: transparent;
+    text-color: @fg-muted;
+}
+

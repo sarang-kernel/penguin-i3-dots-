@@ -1,0 +1,9 @@
+[opener]
+pdf_viewer = [
+  { run = "zathura \"$1\"", desc = "Open PDF with Zathura", block = true, for = "unix" }
+]
+
+[open]
+rules = [
+  { mime = "application/pdf", use = [ "pdf_viewer" ] }
+]

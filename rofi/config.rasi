@@ -1,0 +1,82 @@
+// configuration{
+//     modi: "run,window,combi,clipboard:greenclip print";
+//     icon-theme: "Oranchelo";
+//     show-icons: true;
+//     terminal: "kitty";
+//     drun-display-format: "{icon} {name}";
+//     location: 0;
+//     disable-history: false;
+//     hide-scrollbar: true;
+//     display-combi: " 🖥️  All ";
+//     display-run: " 🏃  Run ";
+//     display-window: " 🪟  Window";
+//     display-clipboard: " 📋 Clipboard";
+//     sidebar-mode: true;
+// }
+//
+// @theme "catppuccin-mocha"
+//
+
+// | Action          | Keys        |
+// | --------------- | ----------- |
+// | Move up/down    | `j` / `k`   |
+// | Move left/right | `h` / `l`   |
+// | Start of line   | Ctrl+A      |
+// | End of line     | Ctrl+E      |
+// | Delete to start | Ctrl+U      |
+// | Delete to end   | Ctrl+K      |
+// | Delete word     | Ctrl+W      |
+// | Accept          | Enter       |
+// | Alt accept      | Shift+Enter |
+// | Custom action   | Ctrl+Enter  |
+// | Cancel          | Esc         |
+// | Cycle modes     | Ctrl+L      |
+//
+
+   /* ---------- Vim-like Navigation ---------- */
+    // kb-row-up: "k,Up";
+    // kb-row-down: "j,Down";
+    // kb-row-left: "h,Left";
+    // kb-row-right: "l,Right";
+    //
+    // /* ---------- Editing (terminal/vim friendly) ---------- */
+    // kb-move-front: "Control+a";
+    // kb-move-end: "Control+e";
+    // kb-remove-to-sol: "Control+u";
+    // kb-remove-to-eol: "Control+k";
+    // kb-remove-word-back: "Control+w";
+    //
+    // /* ---------- Accept / Cancel ---------- */
+    // kb-accept-entry: "Return";
+    // kb-accept-alt: "Shift+Return";
+    // kb-accept-custom: "Control+Return";
+    // kb-cancel: "Escape";
+    //
+    /* ---------- Mode complete (cycle modes) ---------- */
+    // kb-mode-complete: "Control+l";
+
+configuration {
+    modi: "drun,run,window,clipboard:greenclip print";
+    terminal: "kitty";
+    icon-theme: "Papirus";
+    show-icons: true;
+    drun-display-format: "{icon} {name}";
+    location: 0;
+    hide-scrollbar: true;
+    disable-history: false;
+    sidebar-mode: false;
+    display-drun: "";
+    display-run: "";
+    display-window: "";
+    display-clipboard: "";
+}
+
+/* Ensure icons are not hidden by the theme */
+element-icon {
+    size: 24px;
+}
+
+
+/* ---------- Theme ---------- */
+@theme "catppuccin-mocha"
+
