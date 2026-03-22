@@ -1,92 +1,102 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-LOG="${XDG_CACHE_HOME:-$HOME/.cache}/rofi-powermenu.log"
-mkdir -p "$(dirname "$LOG")"
-exec >>"$LOG" 2>&1
+# ─────────────────────────────────────────────────────────────────
+#  Rofi Power Menu + Spotlight Launcher  (i3 / Arch Linux)
+#
+#  - Selecting a power action executes it immediately
+#  - Typing anything launches the spotlight script with that query
+#  - Escape / no input does nothing
+# ─────────────────────────────────────────────────────────────────
 
-echo "---- $(date) ----"
-echo "ENV: DISPLAY=${DISPLAY:-} XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-} PATH=$PATH"
+# Path to your spotlight script
+SPOTLIGHT="${SPOTLIGHT_SCRIPT:-$HOME/.config/rofi/scripts/spotlight.py}"
 
-LOCK_CMD="${LOCK_CMD:-$HOME/.config/i3lock/lock.sh}"
+# Power options (Nerd Font icons — swap for plain text if needed)
+lock="  Lock"
+logout="  Logout"
+restart="  Restart"
+poweroff="  Poweroff"
 
-rofi_cmd() {
-	command -v rofi >/dev/null 2>&1 || {
-		echo "ERROR: rofi not found"
-		exit 1
-	}
-	rofi -dmenu -i -p "Power" -theme-str 'window { width: 20em; }'
-}
+options="$lock\n$logout\n$restart\n$poweroff"
 
-options=$'Lock\nLogout\nSuspend\nHibernate\nReboot\nShutdown'
-choice="$(printf "%s\n" "$options" | rofi_cmd || true)"
-choice="${choice//$'\r'/}" # strip CR if any
-echo "CHOICE=<$choice>"
+# ── Launch rofi ──────────────────────────────────────────────────
+# -format 'i\ns' gives us both the index AND the raw typed string.
+# If the user picks an item  → index is 0-3, string is the label.
+# If the user types freely   → index is -1, string is what they typed.
+# We allow custom input (-no-custom removed) so free typing works.
+read -r idx_raw chosen_raw < <(
+	echo -e "$options" | rofi \
+		-dmenu \
+		-i \
+		-p "⏻" \
+		-mesg "$(cat /proc/sys/kernel/hostname)  •  $(uptime -p)" \
+		-theme-str 'window { width: 520px; border-radius: 14px; }' \
+		-theme-str 'listview { lines: 4; columns: 1; }' \
+		-theme-str 'element  { padding: 10px 18px; border-radius: 8px; }' \
+		-format 'i\ns' \
+		2>/dev/null
+)
 
-[[ -z "$choice" ]] && {
-	echo "No choice selected, exiting."
+# rofi exits non-zero on Escape; bail out cleanly
+[ $? -ne 0 ] && exit 0
+
+idx="${idx_raw:-$chosen_raw}" # when format='i\ns', first line is index
+typed="${chosen_raw}"         # second line is the raw string
+
+# ── Decision logic ───────────────────────────────────────────────
+case "$idx" in
+0) # Lock
+	i3lock --color=1e1e2e
 	exit 0
-}
-
-run_cmd() {
-	echo "RUN: $*"
-	"$@" || {
-		echo "FAILED: $* (exit=$?)"
-		return 1
-	}
-}
-
-do_suspend() {
-	[[ -x "$LOCK_CMD" ]] && run_cmd "$LOCK_CMD" || echo "Lock script missing/not executable: $LOCK_CMD"
-	if command -v loginctl >/dev/null 2>&1; then
-		run_cmd loginctl suspend
-	else
-		run_cmd systemctl suspend
-	fi
-}
-
-do_hibernate() {
-	[[ -x "$LOCK_CMD" ]] && run_cmd "$LOCK_CMD" || echo "Lock script missing/not executable: $LOCK_CMD"
-	if command -v loginctl >/dev/null 2>&1; then
-		run_cmd loginctl hibernate
-	else
-		run_cmd systemctl hibernate
-	fi
-}
-
-case "$choice" in
-Lock)
-	if [[ -x "$LOCK_CMD" ]]; then
-		run_cmd "$LOCK_CMD"
-	else
-		echo "Lock script not executable: $LOCK_CMD"
-		run_cmd i3lock
-	fi
 	;;
-Logout)
-	run_cmd i3-msg exit
+1) # Logout
+	i3-msg exit
+	exit 0
 	;;
-Suspend)
-	do_suspend
+2) # Restart
+	systemctl reboot
+	exit 0
 	;;
-Hibernate)
-	do_hibernate
-	;;
-Reboot)
-	if command -v loginctl >/dev/null 2>&1; then
-		run_cmd loginctl reboot
-	else
-		run_cmd systemctl reboot
-	fi
-	;;
-Shutdown)
-	if command -v loginctl >/dev/null 2>&1; then
-		run_cmd loginctl poweroff
-	else
-		run_cmd systemctl poweroff
-	fi
-	;;
-*)
-	echo "Unknown choice: $choice"
+3) # Poweroff
+	systemctl poweroff
+	exit 0
 	;;
 esac
+
+# ── If we reach here the user typed something freely ─────────────
+query="$(echo "$typed" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+
+# If the query matches a power label exactly, treat it as a selection
+case "$query" in
+*"Lock")
+	i3lock --color=1e1e2e
+	exit 0
+	;;
+*"Logout")
+	i3-msg exit
+	exit 0
+	;;
+*"Restart")
+	systemctl reboot
+	exit 0
+	;;
+*"Poweroff")
+	systemctl poweroff
+	exit 0
+	;;
+esac
+
+# Hand off to spotlight with the typed query pre-filled
+if [ -x "$SPOTLIGHT" ]; then
+	rofi \
+		-modi "spotlight:python3 $SPOTLIGHT" \
+		-show spotlight \
+		-filter "$query" \
+		-theme-str 'window { width: 640px; border-radius: 14px; }' \
+		-theme-str 'listview { lines: 10; columns: 1; }' \
+		-theme-str 'element  { padding: 10px 18px; border-radius: 8px; }'
+else
+	# Spotlight not found — fall back to plain rofi drun
+	notify-send "powermenu" "spotlight.py not found at $SPOTLIGHT" 2>/dev/null
+	rofi -show drun -filter "$query"
+fi

@@ -1,0 +1,120 @@
+/* powermenu.rasi
+   Matches the icon-row layout used by rofi-spotlight-v3.
+   Install: cp powermenu.rasi ~/.config/rofi/powermenu.rasi
+   Icons:   system icon theme (Papirus recommended); falls back gracefully.  */
+
+* {
+    bg0:  #0d0f14;
+    bg1:  #13161d;
+    bg2:  #1a1d28;
+    bdr:  #2a3050;
+    acc:  #7aa2f7;
+    acc2: #bb9af7;
+    urg:  #f7768e;
+    fg0:  #c0caf5;
+    fg1:  #ffffff;
+    fgd:  #3b4261;
+
+    background-color: transparent;
+    text-color:       @fg0;
+    font:             "Monospace 11";
+}
+
+/*  Window  */
+window {
+    background-color: @bg0;
+    border:           2px;
+    border-color:     @acc;
+    border-radius:    14px;
+    width:            380px;
+    padding:          0px;
+}
+
+/*  Layout  */
+mainbox {
+    background-color: transparent;
+    children:         [ inputbar, listview ];
+    spacing:          0px;
+    padding:          0px;
+}
+
+/*  Header bar  */
+inputbar {
+    background-color: @bg1;
+    border:           0px 0px 1px 0px;
+    border-color:     @bdr;
+    border-radius:    14px 14px 0px 0px;
+    padding:          14px 16px;
+    spacing:          0px;
+    children:         [ prompt ];
+}
+
+prompt {
+    background-color: transparent;
+    text-color:       @acc;
+    font:             "Monospace Bold 11";
+}
+
+/*  List  */
+listview {
+    background-color: transparent;
+    padding:          6px;
+    spacing:          2px;
+    lines:            6;
+    columns:          1;
+    scrollbar:        false;
+    fixed-height:     false;
+}
+
+/*  Row  */
+element {
+    background-color: transparent;
+    border-radius:    8px;
+    padding:          9px 12px;
+    spacing:          10px;
+    orientation:      horizontal;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color:       @fg0;
+}
+
+element selected.normal {
+    background-color: @bg2;
+    text-color:       @fg1;
+    border:           1px;
+    border-color:     @acc;
+}
+
+element alternate.normal {
+    background-color: transparent;
+    text-color:       @fg0;
+}
+
+/* urgent = Shutdown / Reboot */
+element normal.urgent {
+    text-color: @urg;
+}
+
+element selected.urgent {
+    background-color: @bg2;
+    text-color:       @urg;
+    border:           1px;
+    border-color:     @urg;
+}
+
+/*  Icon column  */
+element-icon {
+    background-color: transparent;
+    size:             22px;
+    vertical-align:   0.5;
+}
+
+/*  Text column  */
+element-text {
+    background-color: transparent;
+    text-color:       inherit;
+    vertical-align:   0.5;
+    font:             "Monospace 11";
+}
